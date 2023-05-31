@@ -9,7 +9,7 @@ export const Reviews = () => {
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     fetchMoviesCovers(movieId);
-  }, []);
+  }, [movieId]);
 
   const fetchMoviesCovers = async movieId => {
     setIsLoading(true);
