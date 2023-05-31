@@ -19,35 +19,37 @@ const Home = () => {
   `;
 
   useEffect(() => {
-    fetchMoviesList();
-  }, []);
+    const fetchMoviesList = async () => {
+      setIsLoading(true);
 
-  const fetchMoviesList = async () => {
-    setIsLoading(true);
+      try {
+        const response = await fetchMovies();
+        if (!response) {
+          throw new Error('No data :-(');
+        }
+        const selectedProperties = response.map(respon => {
+          return (
+            <HomeList key={respon.id}>
+              <li>
+                <StyledLink
+                  to={`movies/${respon.id}`}
+                  state={{ from: location }}
+                >
+                  {respon.title}
+                </StyledLink>
+              </li>
+            </HomeList>
+          );
+        });
 
-    try {
-      const response = await fetchMovies();
-      if (!response) {
-        throw new Error('No data :-(');
+        setMovieList(selectedProperties);
+      } catch (error) {
+      } finally {
+        setIsLoading(false);
       }
-      const selectedProperties = response.map(respon => {
-        return (
-          <HomeList key={respon.id}>
-            <li>
-              <StyledLink to={`movies/${respon.id}`} state={{ from: location }}>
-                {respon.title}
-              </StyledLink>
-            </li>
-          </HomeList>
-        );
-      });
-
-      setMovieList(selectedProperties);
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+    fetchMoviesList();
+  }, [location]);
 
   return (
     <>

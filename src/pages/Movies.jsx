@@ -21,37 +21,37 @@ export const Movies = () => {
   `;
 
   useEffect(() => {
-    fetchMoviesList(query);
-  }, [query]);
+    const fetchMoviesList = async query => {
+      setIsLoading(true);
 
-  const fetchMoviesList = async query => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetchMovieSearch(query);
-      if (!response) {
-        throw new Error('No data :-(');
-      }
-      const visibleProducts = response.filter(respon =>
-        respon.title.toLowerCase().includes(query.toLowerCase())
-      );
-      const filmsList = visibleProducts.map(item => {
-        return (
-          <MoviesList key={item.id}>
-            <li>
-              <StyledLink to={`${item.id}`} state={{ from: location }}>
-                {item.title}
-              </StyledLink>
-            </li>
-          </MoviesList>
+      try {
+        const response = await fetchMovieSearch(query);
+        if (!response) {
+          throw new Error('No data :-(');
+        }
+        const visibleProducts = response.filter(respon =>
+          respon.title.toLowerCase().includes(query.toLowerCase())
         );
-      });
-      setFilms(filmsList);
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        const filmsList = visibleProducts.map(item => {
+          return (
+            <MoviesList key={item.id}>
+              <li>
+                <StyledLink to={`${item.id}`} state={{ from: location }}>
+                  {item.title}
+                </StyledLink>
+              </li>
+            </MoviesList>
+          );
+        });
+        setFilms(filmsList);
+      } catch (error) {
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMoviesList(query);
+  }, [location, query]);
 
   const updateQueryString = evt => {
     if (evt.target.value === '') {
@@ -59,7 +59,6 @@ export const Movies = () => {
     }
     setSearchParams({ query: evt.target.value });
   };
-
   return (
     <>
       <form onSubmit={updateQueryString}>

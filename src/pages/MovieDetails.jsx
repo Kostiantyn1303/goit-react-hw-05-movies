@@ -44,7 +44,7 @@ const MovieDetails = () => {
 
   useEffect(() => {
     fetchMoviesInformation(movieId);
-  }, []);
+  }, [movieId]);
 
   const fetchMoviesInformation = async movieId => {
     setIsLoading(true);
@@ -61,8 +61,8 @@ const MovieDetails = () => {
       setIsLoading(false);
     }
   };
-  console.log(filmDetails);
-  const posterPath = 'https://image.tmdb.org/t/p/w300';
+
+  const posterPath = 'https://image.tmdb.org/t/p/w500';
   const date = new Date(filmDetails.release_date);
   const score = filmDetails.vote_average * 10;
 
