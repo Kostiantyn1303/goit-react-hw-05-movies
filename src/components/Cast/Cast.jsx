@@ -8,7 +8,7 @@ export const Cast = () => {
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     fetchMoviesActors(movieId);
-  }, []);
+  }, [movieId]);
 
   const fetchMoviesActors = async movieId => {
     setIsLoading(true);
