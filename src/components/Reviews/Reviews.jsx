@@ -7,6 +7,7 @@ export const Reviews = () => {
   const { movieId } = useParams();
   const [filmReview, setFilmReview] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   useEffect(() => {
     fetchMoviesCovers(movieId);
   }, [movieId]);
@@ -16,7 +17,7 @@ export const Reviews = () => {
 
     try {
       const response = await fetchMoviesReviews(movieId);
-      if (!response) {
+      if (!response.length) {
         throw new Error('No data :-(');
       }
 
@@ -29,7 +30,8 @@ export const Reviews = () => {
         );
       });
       setFilmReview(changeReviewss);
-    } catch (error) {
+    } catch (errorCaught) {
+      setError(errorCaught);
     } finally {
       setIsLoading(false);
     }
@@ -37,6 +39,7 @@ export const Reviews = () => {
 
   return (
     <div>
+      {error && <p>We don't have any reviews for this movie.</p>}
       {filmReview}
       {isLoading && <Loader />}
     </div>

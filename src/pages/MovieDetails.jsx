@@ -1,10 +1,12 @@
 import { Outlet, useParams } from 'react-router-dom';
 import { useState, useEffect, Suspense } from 'react';
+import { useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import fetchMoviesDetails from 'Api/ApiFilmDetails';
 import { Link } from 'react-router-dom';
 import Loader from 'components/Loading/Loading';
 import styled from '@emotion/styled';
+
 import {
   Title,
   Information,
@@ -14,12 +16,17 @@ import {
   MovieDetailsLinkList,
   AddInformationbox,
   Container,
+  Image,
+  ImageBox,
 } from './MovieDetails.styled';
 const MovieDetails = () => {
   const [filmDetails, setFilmDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const { movieId } = useParams();
+
   const location = useLocation();
+  const backLink = useRef(location.state?.from ?? '/');
   const StyledLink = styled(Link)`
     color: black;
 
@@ -41,39 +48,47 @@ const MovieDetails = () => {
       color: orange;
     }
   `;
-
   useEffect(() => {
-    fetchMoviesInformation(movieId);
+    const getMovieInformation = async movieId => {
+      setIsLoading(true);
+      try {
+        const movieData = await fetchMoviesDetails(movieId);
+        if (!movieData) {
+          throw new Error('No data! :-(');
+        }
+        setFilmDetails(movieData); // Записуємо в стейт обєкт з даними
+      } catch (errorCaught) {
+        setError(errorCaught);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (movieId) {
+      getMovieInformation(movieId);
+    }
   }, [movieId]);
 
-  const fetchMoviesInformation = async movieId => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetchMoviesDetails(movieId);
-      if (!response) {
-        throw new Error('No data :-(');
-      }
-
-      setFilmDetails(response);
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const posterPath = 'https://image.tmdb.org/t/p/w500';
   const date = new Date(filmDetails.release_date);
   const score = filmDetails.vote_average * 10;
 
   return (
     <div>
-      <StyledLinkBtn to={location.state?.from ?? '/'}>Go back</StyledLinkBtn>
+      <StyledLinkBtn to={backLink.current}>Go back</StyledLinkBtn>
       <Container>
-        {' '}
-        <div>
-          <img src={`${posterPath}${filmDetails.poster_path}`} alt="" />
-        </div>
+        {isLoading && <Loader />}
+        {error && 'Sorry, there is no data for the selected movie.'}
+        <ImageBox>
+          <Image
+            src={
+              filmDetails.poster_path
+                ? `https://image.tmdb.org/t/p/w400/${filmDetails.poster_path}`
+                : ''
+            }
+            alt="movie_picture"
+            width="300"
+          />
+        </ImageBox>
         <div>
           <Title>
             {filmDetails.title} ({date.getFullYear()})
@@ -94,7 +109,7 @@ const MovieDetails = () => {
           </li>
         </MovieDetailsLinkList>
       </AddInformationbox>
-      {isLoading && <Loader />}
+
       <Suspense>
         <Outlet />
       </Suspense>

@@ -19,11 +19,22 @@ export const AddInformation = styled.div`
 `;
 export const MovieDetailsLinkList = styled.ul`
   list-style: none;
+  display: flex;
+  gap: 50px;
+  justify-content: center;
 `;
 export const AddInformationbox = styled.div`
+  text-align: center;
   margin-top: 5px;
 `;
 export const Container = styled.div`
   display: flex;
   gap: 15px;
+`;
+export const Image = styled.img`
+  width: 300px;
+  height: 400px;
+`;
+export const ImageBox = styled.div`
+  width: 400px;
 `;
